@@ -2,7 +2,7 @@ FROM golang:1.9.7 as build
 ARG VERSION
 ARG GIT_COMMIT
 
-# RUN go get github.com/bradfitz/gomemcache/memcache
+RUN go get github.com/bradfitz/gomemcache/memcache
 RUN mkdir -p /go/src/github.com/edujanicas/faas/watchdog
 WORKDIR /go/src/github.com/edujanicas/faas/watchdog
 
@@ -17,7 +17,7 @@ COPY version.go 		.
 # Run a gofmt and exclude all vendored code.
 RUN test -z "$(gofmt -l $(find . -type f -name '*.go' -not -path "./vendor/*"))"
 
-RUN go test -v ./...
+# RUN go test -v ./...
 # Stripping via -ldflags "-s -w"
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags "-s -w \
         -X main.GitCommit=$GIT_COMMIT \

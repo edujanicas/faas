@@ -14,7 +14,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/openfaas/faas/watchdog/types"
+	"github.com/edujanicas/faas/watchdog/types"
 )
 
 var version bool

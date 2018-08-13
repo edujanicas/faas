@@ -16,7 +16,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/openfaas/faas/watchdog/types"
+	"github.com/edujanicas/faas/watchdog/types"
+	//"github.com/bradfitz/gomemcache/memcache"
 )
 
 var acceptingConnections bool
@@ -105,6 +106,22 @@ func pipeRequest(config *WatchdogConfig, w http.ResponseWriter, r *http.Request,
 	}
 
 	wg.Add(wgCount)
+
+	// Memcached syncronization
+	//go func() {
+	//	mc_l := memcache.New("localhost:11211")
+	//	mc_g := memcache.New("146.179.131.184:11211")
+
+	//	for {
+	//		it_l, err := mc_l.Get("weights_0_1")
+	//		it_g, err := mc_g.Get("weights_0_1")
+
+	//		mc_l.Set(&memcache.Item{Key: "weights_0_1", Value: it_g})
+	//		mc_g.Set(&memcache.Item{Key: "weights_0_1", Value: it_l})
+
+	//		time.Sleep(2 * time.Second)
+	//	}
+	//}()
 
 	var timer *time.Timer
 

@@ -12,20 +12,20 @@ GIT_COMMIT=$(git rev-list -1 HEAD)
 VERSION=$(git describe --all --exact-match `git rev-parse HEAD` | grep tags | sed 's/tags\///')
 cd watchdog
 
-if [ ! $http_proxy == "" ] 
+if [ ! $http_proxy == "" ]
 then
     docker build --no-cache --build-arg https_proxy=$https_proxy --build-arg http_proxy=$http_proxy \
-        --build-arg GIT_COMMIT=$GIT_COMMIT --build-arg VERSION=$VERSION -t openfaas/watchdog:build .
+        --build-arg GIT_COMMIT=$GIT_COMMIT --build-arg VERSION=$VERSION -t ejanicas/watchdog:build .
 else
-    docker build --no-cache --build-arg VERSION=$VERSION --build-arg GIT_COMMIT=$GIT_COMMIT -t openfaas/watchdog:build .
+    docker build --no-cache --build-arg VERSION=$VERSION --build-arg GIT_COMMIT=$GIT_COMMIT -t ejanicas/watchdog:build .
 fi
 
-docker create --name buildoutput openfaas/watchdog:build echo
+docker create --name buildoutput ejanicas/watchdog:build echo
 
-docker cp buildoutput:/go/src/github.com/openfaas/faas/watchdog/watchdog ./fwatchdog
-docker cp buildoutput:/go/src/github.com/openfaas/faas/watchdog/watchdog-armhf ./fwatchdog-armhf
-docker cp buildoutput:/go/src/github.com/openfaas/faas/watchdog/watchdog-arm64 ./fwatchdog-arm64
-docker cp buildoutput:/go/src/github.com/openfaas/faas/watchdog/watchdog.exe ./fwatchdog.exe
+docker cp buildoutput:/go/src/github.com/edujanicas/faas/watchdog/watchdog ./fwatchdog
+docker cp buildoutput:/go/src/github.com/edujanicas/faas/watchdog/watchdog-armhf ./fwatchdog-armhf
+docker cp buildoutput:/go/src/github.com/edujanicas/faas/watchdog/watchdog-arm64 ./fwatchdog-arm64
+docker cp buildoutput:/go/src/github.com/edujanicas/faas/watchdog/watchdog.exe ./fwatchdog.exe
 
 docker rm buildoutput
 

@@ -111,11 +111,13 @@ func pipeRequest(config *WatchdogConfig, w http.ResponseWriter, r *http.Request,
 	// Memcached syncronization
 	go func() {
 		mc_l := memcache.New("localhost:11211")
-		mc_g := memcache.New("146.179.131.184:11211")
+		mc_g := memcache.New("146.179.131.181:11211")
 
 		for {
-			it_l, err_l := mc_l.Get("weights_0_1")
-			it_g, err_g := mc_g.Get("weights_0_1")
+			it0_l, err_l := mc_l.Get("weights_0_1")
+			it0_g, err_g := mc_g.Get("weights_0_1")
+			it1_l, _ := mc_l.Get("weights_1_2")
+			it1_g, _ := mc_g.Get("weights_1_2")
 			time_l, err_time_l := mc_l.Get("weights_0_1_t")
 			time_g, err_time_g := mc_g.Get("weights_0_1_t")
 
@@ -127,36 +129,19 @@ func pipeRequest(config *WatchdogConfig, w http.ResponseWriter, r *http.Request,
 				time_gi, _ := strconv.Atoi(time_gs)
 
 				if time_li > time_gi {
-					mc_g.Set(&memcache.Item{Key: "weights_0_1", Value: it_l.Value})
+					mc_g.Set(&memcache.Item{Key: "weights_0_1", Value: it0_l.Value})
 					mc_g.Set(&memcache.Item{Key: "weights_0_1_t", Value: time_l.Value})
-				} else if time_gi > time_li {
-					mc_l.Set(&memcache.Item{Key: "weights_0_1", Value: it_g.Value})
-					mc_l.Set(&memcache.Item{Key: "weights_0_1_t", Value: time_g.Value})
-				}
-			}
-
-			it_l, err_l = mc_l.Get("weights_1_2")
-			it_g, err_g = mc_g.Get("weights_1_2")
-			time_l, err_time_l = mc_l.Get("weights_1_2_t")
-			time_g, err_time_g = mc_g.Get("weights_1_2_t")
-
-			if err_l == nil && err_g == nil && err_time_l == nil && err_time_g == nil {
-				time_ls := string(time_l.Value)
-				time_gs := string(time_g.Value)
-
-				time_li, _ := strconv.Atoi(time_ls)
-				time_gi, _ := strconv.Atoi(time_gs)
-
-				if time_li > time_gi {
-					mc_g.Set(&memcache.Item{Key: "weights_1_2", Value: it_l.Value})
+					mc_g.Set(&memcache.Item{Key: "weights_1_2", Value: it1_l.Value})
 					mc_g.Set(&memcache.Item{Key: "weights_1_2_t", Value: time_l.Value})
 				} else if time_gi > time_li {
-					mc_l.Set(&memcache.Item{Key: "weights_1_2", Value: it_g.Value})
+					mc_l.Set(&memcache.Item{Key: "weights_0_1", Value: it0_g.Value})
+					mc_l.Set(&memcache.Item{Key: "weights_0_1_t", Value: time_g.Value})
+					mc_l.Set(&memcache.Item{Key: "weights_1_2", Value: it1_g.Value})
 					mc_l.Set(&memcache.Item{Key: "weights_1_2_t", Value: time_g.Value})
 				}
 			}
 			// 1 secs
-			time.Sleep(time.Second / 10)
+			time.Sleep(time.Second)
 		}
 	}()
 
